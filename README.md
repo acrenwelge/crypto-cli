@@ -1,10 +1,12 @@
 # Crypto CLI
 
 ### Installation
-```
-git clone <url>
-gradle build ?
-...
+```bash
+git clone https://github.com/acrenwelge/crypto-cli
+gradle build
+cp build/libs/app.jar /bin/crypto.jar # or another location on your $PATH
+echo "alias crypto='java -jar /bin/crypto.jar'" > ~/.bashrc
+alias crypto='java -jar /bin/crypto.jar'
 ```
 
 ### Usage

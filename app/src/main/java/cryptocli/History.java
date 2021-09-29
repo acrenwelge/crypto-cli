@@ -20,8 +20,10 @@ public class History implements Callable<Integer> {
     @ParentCommand
     Crypto crypto;
 
+    private CoinService coinService = CoinService.getInstance();
+
     public Integer call() throws IOException, InterruptedException {
-        String res = CoinService.getCoinHistory(crypto.coinName, denomination, numDaysHistory);
+        String res = coinService.getCoinHistory(crypto.coinName, denomination, numDaysHistory);
         System.out.println(res);
         return 0;
     }

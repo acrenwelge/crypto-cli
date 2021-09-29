@@ -22,9 +22,11 @@ public class Price implements Callable<Integer> {
     @Option(names="--date")
     LocalDate date;
 
+    private CoinService coinService = CoinService.getInstance();
+
     @Override
     public Integer call() throws Exception {
-        String result = CoinService.getCoinPrices(new String[] {crypto.coinName}, denominations);
+        String result = coinService.getCoinPrices(new String[] {crypto.coinName}, denominations);
         System.out.println(result);
         return 0;
     }
