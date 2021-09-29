@@ -2,6 +2,7 @@ package cryptocli;
 
 import java.util.concurrent.Callable;
 
+import models.Coin;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -9,6 +10,7 @@ import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.ScopeType;
 import util.CoinService;
 import util.CustomLogger;
+import views.CoinView;
 
 @Command(name = "crypto", 
     mixinStandardHelpOptions = true, 
@@ -45,8 +47,8 @@ public class Crypto implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        String result = coinService.getCoin(coinName);
-        logger.print(result);
+        Coin coin = coinService.getCoin(coinName);
+        CoinView.display(coin);
         return 0;
     }
 }

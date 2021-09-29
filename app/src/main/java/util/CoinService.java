@@ -12,6 +12,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import models.Coin;
+
 /**
  * Singleton class for getting coin information from the API
  */
@@ -37,14 +39,14 @@ public class CoinService {
         .connectTimeout(Duration.ofSeconds(20))
         .build();
 
-    public String getCoin(String coin) throws IOException, InterruptedException {
+    public Coin getCoin(String coin) throws IOException, InterruptedException {
         final String URL = BASE_URL.concat("/coins/").concat(coin);
         logger.trace(URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
             .build();
         HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
-        return resp.body();
+        return Coin.fromJsonString(resp.body());
     }
 
     public String getCoinList() throws IOException, InterruptedException {
