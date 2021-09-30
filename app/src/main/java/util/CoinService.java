@@ -12,7 +12,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import models.Coin;
@@ -50,6 +50,14 @@ public class CoinService {
             .build();
         HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
         return Coin.fromJsonString(resp.body());
+    }
+
+    public List<Coin> getCoins(String... coins) throws IOException, InterruptedException {
+        List<Coin> list = new ArrayList<>();
+        for (String c : coins) {
+            list.add(getCoin(c));
+        }
+        return list;
     }
 
     public List<Coin> getCoinList() throws IOException, InterruptedException {

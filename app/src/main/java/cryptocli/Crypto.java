@@ -22,7 +22,7 @@ public class Crypto implements Callable<Integer> {
     @Option(names={"-c","--coin"},
         scope = ScopeType.INHERIT,
         description="bitcoin, ethereum, usdc, ...")
-    String coinName;
+    String[] coinNames;
 
     @Option(names = {"-v", "--verbose"},
         description = "Set verbose mode")
@@ -49,8 +49,10 @@ public class Crypto implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        Coin coin = coinService.getCoin(coinName);
-        CoinView.display(coin);
+        for (String name : coinNames) {
+            Coin coin = coinService.getCoin(name);
+            CoinView.displayCoinInfo(coin);
+        }
         return 0;
     }
 }

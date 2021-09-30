@@ -11,6 +11,8 @@ alias crypto='java -jar /bin/crypto.jar'
 
 ### Usage
 
+> Please note: there is currently a rate limit of 50 calls / minute for the free API being used
+
 ✅ Search for a crypto
 ```bash
 crypto search bit
@@ -24,6 +26,11 @@ crypto --coin bitcoin
 ✅ Get price info only
 ```bash
 crypto price --coin bitcoin
+```
+
+✅ Get price info for multiple coins in multiple currencies
+```bash
+crypto price -c bitcoin ethereum -c litecoin -cur usd -cur eur
 ```
 
 ✅ Get price history of bitcoin for last 10 days
@@ -40,3 +47,10 @@ Watch the price (default: refresh every 30 seconds)
 ```bash
 crypto price -c bitcoin --watch
 ```
+
+### Built with...
+* Java
+* Gradle
+* [Coingecko API](https://www.coingecko.com/en/api/documentation?)
+* [picocli](https://picocli.info/)
+* [Google Gson](https://github.com/google/gson/blob/master/UserGuide.md)

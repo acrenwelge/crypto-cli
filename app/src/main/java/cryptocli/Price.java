@@ -7,6 +7,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.ParentCommand;
 import util.CoinService;
+import views.CoinView;
 
 @Command(name="price", 
     description = "Lookup price data on a cryptocurrency"
@@ -26,8 +27,8 @@ public class Price implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        String result = coinService.getCoinPrices(new String[] {crypto.coinName}, denominations);
-        System.out.println(result);
+        String jsonResult = coinService.getCoinPrices(crypto.coinNames, denominations);
+        CoinView.displayPriceTable(jsonResult, crypto.coinNames, denominations);
         return 0;
     }
 }

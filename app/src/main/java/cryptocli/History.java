@@ -23,7 +23,7 @@ public class History implements Callable<Integer> {
     private CoinService coinService = CoinService.getInstance();
 
     public Integer call() throws IOException, InterruptedException {
-        String res = coinService.getCoinHistory(crypto.coinName, denomination, numDaysHistory);
+        String res = coinService.getCoinHistory(crypto.coinNames[0], denomination, numDaysHistory);
         System.out.println(res);
         return 0;
     }
