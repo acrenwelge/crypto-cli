@@ -19,15 +19,14 @@ import views.CoinView;
     subcommands = {Search.class, Price.class, History.class}
     )
 public class Crypto implements Callable<Integer> {
-
     @Option(names={"-c","--coin"},
         scope = ScopeType.INHERIT,
         description="bitcoin, ethereum, usdc, ...")
     String coinName;
 
     @Option(names = {"-v", "--verbose"},
-        description = "Increase verbosity. Specify multiple times to increase (-vvv).")
-    boolean[] verbosity = new boolean[0];
+        description = "Set verbose mode")
+    boolean verbose;
 
     private CustomLogger logger = CustomLogger.getInstance();
     private CoinService coinService = CoinService.getInstance();
@@ -41,7 +40,10 @@ public class Crypto implements Callable<Integer> {
     }
 
     private int executionStrategy(ParseResult parseResult) {
-        CustomLogger.LOGGING_LEVEL = verbosity.length;
+        if (parseResult.hasMatchedOption("-v")) {
+            CustomLogger.LOGGING_LEVEL = true;
+        }
+        logger.debug("verbosity enabled");
         return new CommandLine.RunLast().execute(parseResult); // default execution strategy
     }
 

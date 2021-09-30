@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import models.Coin;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 import util.CoinService;
@@ -22,11 +23,17 @@ public class Search implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        String rawResponse = coinService.getCoinList();
-        List<String> result = rawResponse.lines()
-            .filter(s -> s.contains(query))
+        List<Coin> listOfCoins = coinService.getCoinList();
+        List<Coin> filteredCoins = listOfCoins.stream()
+            .filter(coin -> coin.id.contains(query) || coin.name.contains(query) || coin.symbol.contains(query))
             .collect(Collectors.toList());
-        result.forEach(logger::print);
+        logger.print("=".repeat(80).concat("%n"));
+        logger.print("%80s%n",String.format("SEARCH RESULTS FOR \"%s\"", query));
+        logger.print("=".repeat(80).concat("%n"));
+        logger.print("| %30s | %30s | %10s | %n", "ID","Name","Symbol");
+        for (Coin coin : filteredCoins) {
+            logger.print("| %30s | %30s | %10s | %n", coin.id, coin.name, coin.symbol);
+        }
         return 0;
     }
     

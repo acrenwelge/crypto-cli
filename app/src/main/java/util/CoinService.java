@@ -1,5 +1,6 @@
 package util;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,6 +12,8 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
 
 import models.Coin;
 
@@ -41,7 +44,7 @@ public class CoinService {
 
     public Coin getCoin(String coin) throws IOException, InterruptedException {
         final String URL = BASE_URL.concat("/coins/").concat(coin);
-        logger.trace(URL);
+        logger.trace("Sending request to: %s",URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
             .build();
@@ -49,14 +52,23 @@ public class CoinService {
         return Coin.fromJsonString(resp.body());
     }
 
-    public String getCoinList() throws IOException, InterruptedException {
-        final String URL = BASE_URL.concat("/coins/list");
-        logger.trace(URL);
-        HttpRequest req = HttpRequest.newBuilder()
-            .uri(URI.create(URL))
-            .build();
-        HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
-        return resp.body();
+    public List<Coin> getCoinList() throws IOException, InterruptedException {
+        List<Coin> coins;
+        try {
+            coins = CoinFileReaderWriter.getCoinListFromFile();
+        } catch (FileNotFoundException fnfe) {
+            final String URL = BASE_URL.concat("/coins/list");
+            logger.trace("Sending request to: %s",URL);
+            HttpRequest req = HttpRequest.newBuilder()
+                .uri(URI.create(URL))
+                .build();
+            HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
+            String rawJson = resp.body();
+            logger.info("Writing coin list to cache file...");
+            CoinFileReaderWriter.writeCoinListToFile(rawJson);
+            coins = CoinFileReaderWriter.getCoinListFromJson(rawJson);
+        }
+        return coins;
     }
 
     public String getCoinPrices(String[] coins, String[] denominations) 
@@ -66,7 +78,7 @@ public class CoinService {
             .concat(String.join(",", coins))
             .concat("&vs_currencies=")
             .concat(String.join(",", denominations));
-        logger.trace(URL);
+        logger.trace("Sending request to: %s",URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
             .build();
@@ -80,7 +92,7 @@ public class CoinService {
             .concat("/coins/").concat(coin)
             .concat("/market_chart?days=").concat(String.valueOf(daysAgo))
             .concat("&vs_currency=").concat(denomination);
-        logger.trace(URL);
+        logger.trace("Sending request to: %s",URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
             .build();
@@ -94,7 +106,7 @@ public class CoinService {
             .concat("/coins/").concat(coin)
             .concat("/history?date=")
             .concat(date.format(DateTimeFormatter.ofPattern("dd-mm-yyyy")));
-        logger.trace(URL);
+        logger.trace("Sending request to: %s",URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
             .build();

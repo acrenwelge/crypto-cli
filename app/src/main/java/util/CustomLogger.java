@@ -10,10 +10,18 @@ public class CustomLogger {
         return instance;
     }
 
-    public static int LOGGING_LEVEL;
+    public static boolean LOGGING_LEVEL;
 
     public void print(String pattern, Object... params) {
         System.out.printf(pattern, params);
+    }
+
+    public void print() {
+        System.out.println();
+    }
+
+    public void error(String pattern, Object... params) {
+        System.err.printf(pattern, params);
     }
 
     public void info(String pattern, Object... params) {
@@ -29,7 +37,7 @@ public class CustomLogger {
     }
 
     private void log(int threshold, String pattern, Object... params) {
-        if (LOGGING_LEVEL > threshold) {
+        if (LOGGING_LEVEL) {
             System.err.printf(pattern, params);
         }
     }

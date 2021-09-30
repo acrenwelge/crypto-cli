@@ -1,7 +1,6 @@
 package models;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -20,7 +19,6 @@ public class Coin {
 
     public static class CoinBuilder {
         public Coin coin = new Coin();
-        public CoinBuilder() {}
         public CoinBuilder addId(String id) {
             coin.id = id;
             return this;
@@ -81,8 +79,12 @@ public class Coin {
             .get("market_cap").getAsJsonObject()
             .get("usd").getAsBigDecimal();
         int marketCapRank = rootObj.get("market_cap_rank").getAsInt();
-        BigDecimal maxSupply = market.get("max_supply").getAsBigDecimal();
-        BigDecimal circulatingSupply = market.get("circulating_supply").getAsBigDecimal();
+        BigDecimal maxSupply = market.get("max_supply").isJsonNull() ? 
+            null :
+            market.get("max_supply").getAsBigDecimal();
+        BigDecimal circulatingSupply = market.get("circulating_supply").isJsonNull() ?
+            null :
+            market.get("circulating_supply").getAsBigDecimal();
         return new Coin.CoinBuilder()
             .addId(id)
             .addSymbol(symbol)
