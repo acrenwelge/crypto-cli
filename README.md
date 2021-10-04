@@ -4,9 +4,9 @@
 ```bash
 git clone https://github.com/acrenwelge/crypto-cli
 gradle build
-cp build/libs/app.jar /bin/crypto.jar # or another location on your $PATH
-echo "alias crypto='java -jar /bin/crypto.jar'" > ~/.bashrc
-alias crypto='java -jar /bin/crypto.jar'
+cp ./app/build/libs/app.jar /usr/local/bin/crypto.jar # or another location on your $PATH
+echo "alias crypto='java -jar /usr/local/bin/crypto.jar'" >> ~/.bashrc
+alias crypto='java -jar /usr/local/bin/crypto.jar'
 ```
 
 ### Usage
@@ -38,14 +38,15 @@ crypto price -c bitcoin ethereum -c litecoin -cur usd -cur eur
 crypto history -c bitcoin -d 10
 ```
 
-🤨 Get USD price of bitcoin on May 1, 2015
+✅ Get USD price of bitcoin on May 1, 2015
 ```bash
 crypto price -c bitcoin --date 5-1-2015
 ```
 
-Watch the price (default: refresh every 30 seconds)
+✅ Watch the price (default: refresh every 15 seconds)
 ```bash
 crypto price -c bitcoin --watch
+crypto price -c bitcoin -w -i 10 -s 1 # interval of 10 seconds, stop after 1 minute
 ```
 
 ### Built with...

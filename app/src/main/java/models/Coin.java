@@ -2,9 +2,6 @@ package models;
 
 import java.math.BigDecimal;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 public class Coin {
     public String id;
     public String symbol;
@@ -64,38 +61,4 @@ public class Coin {
         }
     }
 
-    public static Coin fromJsonString(String rawJson) {
-        JsonObject rootObj = JsonParser.parseString(rawJson).getAsJsonObject();
-        String id = rootObj.get("id").getAsString();
-        String symbol = rootObj.get("symbol").getAsString();
-        String name = rootObj.get("name").getAsString();
-        String algo = rootObj.get("hashing_algorithm").getAsString();
-        String descr = rootObj.get("description").getAsJsonObject().get("en").getAsString();
-        JsonObject market = rootObj.get("market_data").getAsJsonObject();
-        double price = market
-            .get("current_price").getAsJsonObject()
-            .get("usd").getAsDouble();
-        BigDecimal marketCap = market
-            .get("market_cap").getAsJsonObject()
-            .get("usd").getAsBigDecimal();
-        int marketCapRank = rootObj.get("market_cap_rank").getAsInt();
-        BigDecimal maxSupply = market.get("max_supply").isJsonNull() ? 
-            null :
-            market.get("max_supply").getAsBigDecimal();
-        BigDecimal circulatingSupply = market.get("circulating_supply").isJsonNull() ?
-            null :
-            market.get("circulating_supply").getAsBigDecimal();
-        return new Coin.CoinBuilder()
-            .addId(id)
-            .addSymbol(symbol)
-            .addName(name)
-            .addDescription(descr)
-            .addHashAlgorithm(algo)
-            .addCurrentPrice(price)
-            .addMarketCap(marketCap)
-            .addMarketCapRank(marketCapRank)
-            .addCirculatingSupply(circulatingSupply)
-            .addMaxSupply(maxSupply)
-            .build();
-    }
 }

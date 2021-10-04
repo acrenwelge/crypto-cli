@@ -3,16 +3,19 @@ package util;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import models.Coin;
@@ -35,6 +38,7 @@ public class CoinService {
     }
 
     public static final String BASE_URL = "https://api.coingecko.com/api/v3";
+    public static final String DEBUG_REQUEST = "Sending request to: %s";
 
     private static HttpClient client = HttpClient.newBuilder()
         .version(Version.HTTP_1_1)
@@ -44,12 +48,13 @@ public class CoinService {
 
     public Coin getCoin(String coin) throws IOException, InterruptedException {
         final String URL = BASE_URL.concat("/coins/").concat(coin);
-        logger.trace("Sending request to: %s",URL);
+        URLEncoder.encode(URL,StandardCharsets.UTF_8);
+        logger.trace(DEBUG_REQUEST,URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
             .build();
         HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
-        return Coin.fromJsonString(resp.body());
+        return CoinJsonParser.fromJsonString(resp.body());
     }
 
     public List<Coin> getCoins(String... coins) throws IOException, InterruptedException {
@@ -66,7 +71,7 @@ public class CoinService {
             coins = CoinFileReaderWriter.getCoinListFromFile();
         } catch (FileNotFoundException fnfe) {
             final String URL = BASE_URL.concat("/coins/list");
-            logger.trace("Sending request to: %s",URL);
+            logger.trace(DEBUG_REQUEST,URL);
             HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(URL))
                 .build();
@@ -86,7 +91,7 @@ public class CoinService {
             .concat(String.join(",", coins))
             .concat("&vs_currencies=")
             .concat(String.join(",", denominations));
-        logger.trace("Sending request to: %s",URL);
+        logger.trace(DEBUG_REQUEST,URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
             .build();
@@ -94,13 +99,13 @@ public class CoinService {
         return resp.body();
     }
 
-    public String getCoinHistory(String coin, String denomination, int daysAgo) 
+    public String getCoinHistory(String coin, Currency currency, int daysAgo) 
         throws IOException, InterruptedException  {
         final String URL = BASE_URL
             .concat("/coins/").concat(coin)
             .concat("/market_chart?days=").concat(String.valueOf(daysAgo))
-            .concat("&vs_currency=").concat(denomination);
-        logger.trace("Sending request to: %s",URL);
+            .concat("&vs_currency=").concat(currency.getCurrencyCode());
+        logger.trace(DEBUG_REQUEST,URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
             .build();
@@ -108,17 +113,17 @@ public class CoinService {
         return resp.body();
     }
 
-    public String getCoinPriceOnDate(String coin, LocalDate date) 
+    public Coin getCoinPriceOnDate(String coin, LocalDate date, String currency)
         throws IOException, InterruptedException  {
         final String URL = BASE_URL
             .concat("/coins/").concat(coin)
             .concat("/history?date=")
-            .concat(date.format(DateTimeFormatter.ofPattern("dd-mm-yyyy")));
-        logger.trace("Sending request to: %s",URL);
+            .concat(date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        logger.trace(DEBUG_REQUEST,URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
             .build();
         HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
-        return resp.body();
+        return CoinJsonParser.fromDateSnapshotJson(resp.body(), currency);
     }
 }

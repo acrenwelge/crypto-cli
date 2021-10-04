@@ -16,7 +16,7 @@
             "request": "launch",
             "mainClass": "cryptocli.Crypto",
             "projectName": "app",
-            "args": "-v -c ethereum"
+            "args": "price -c bitcoin -w -i 10 -s 1"
         }
     ]
 }

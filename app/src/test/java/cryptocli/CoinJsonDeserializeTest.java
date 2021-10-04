@@ -11,13 +11,14 @@ import org.junit.Test;
 
 import models.Coin;
 import util.CoinFileReaderWriter;
+import util.CoinJsonParser;
 
 public class CoinJsonDeserializeTest {
     @Test
     public void testDeserializeCoin() throws IOException {
         Path p = Paths.get("../samplecoin.json");
         String rawJson = Files.readString(p);
-        Coin sample = Coin.fromJsonString(rawJson);
+        Coin sample = CoinJsonParser.fromJsonString(rawJson);
         Assert.assertEquals("bitcoin", sample.id);
     }
 
