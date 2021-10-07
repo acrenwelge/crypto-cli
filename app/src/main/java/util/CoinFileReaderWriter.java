@@ -17,28 +17,20 @@ import models.Coin;
 
 public class CoinFileReaderWriter {
     private CoinFileReaderWriter() {}
-    private static final String CACHED_COIN_LIST_FILE = "../coins.json";
+    public static final String CACHED_COIN_LIST_FILE = System.getenv("HOME").concat("/.crypto/coins.json");
 
     private static final CustomLogger logger = CustomLogger.getInstance();
 
-    public static List<Coin> getCoinListFromFile() throws FileNotFoundException {
-        List<Coin> list = new ArrayList<>();
+    public static List<Coin> getCoinListFromFile() throws IOException, JsonParseException {
         String raw;
-        try {
-            Path filepath = Paths.get(CACHED_COIN_LIST_FILE);
-            if (Files.exists(filepath)) {
-                raw = Files.readString(filepath);
-                list = getCoinListFromJson(raw);
-            } else {
-                logger.error("File Not Found: %s", CACHED_COIN_LIST_FILE);
-                throw new FileNotFoundException();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JsonParseException jpe) {
-            logger.error("There was a problem parsing the json string");
+        Path filepath = Paths.get(CACHED_COIN_LIST_FILE);
+        if (Files.exists(filepath)) {
+            raw = Files.readString(filepath);
+            return getCoinListFromJson(raw);
+        } else {
+            logger.error("File Not Found: %s%n", CACHED_COIN_LIST_FILE);
+            throw new FileNotFoundException();
         }
-        return list;
     }
 
     public static List<Coin> getCoinListFromJson(String jsonCoinList) {
@@ -55,7 +47,12 @@ public class CoinFileReaderWriter {
         return list;
     }
 
-    public static void writeCoinListToFile(String coinsJson) {
+    public static void writeCoinListToFile(String coinsJson) throws IOException {
+        Path p = Paths.get(CACHED_COIN_LIST_FILE);
+        if (!Files.exists(p)) {
+            Files.createDirectories(p.getParent());
+            Files.createFile(p);
+        }
         try {
             Files.writeString(Paths.get(CACHED_COIN_LIST_FILE), coinsJson, StandardOpenOption.WRITE);
         } catch (IOException e) {

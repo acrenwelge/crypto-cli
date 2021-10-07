@@ -11,12 +11,16 @@ import models.Coin;
 import models.SimpleCoin;
 
 public class CoinJsonParser {
+    private CoinJsonParser(){}
+
     public static Coin fromJsonString(String rawJson) {
         JsonObject rootObj = JsonParser.parseString(rawJson).getAsJsonObject();
         String id = rootObj.get("id").getAsString();
         String symbol = rootObj.get("symbol").getAsString();
         String name = rootObj.get("name").getAsString();
-        String algo = rootObj.get("hashing_algorithm").getAsString();
+        String algo = rootObj.get("hashing_algorithm").isJsonNull() ? 
+            null :
+            rootObj.get("hashing_algorithm").getAsString();
         String descr = rootObj.get("description").getAsJsonObject().get("en").getAsString();
         JsonObject market = rootObj.get("market_data").getAsJsonObject();
         double price = market

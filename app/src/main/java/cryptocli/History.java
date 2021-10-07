@@ -18,7 +18,7 @@ public class History implements Callable<Integer> {
     @Option(names={"-d", "--days"})
     Integer numDaysHistory;
 
-    @Option(names={"-cur", "--currency"}, defaultValue = "usd")
+    @Option(names={"-cur", "--currency"}, defaultValue = "USD")
     String denomination;
 
     @ParentCommand
@@ -27,7 +27,7 @@ public class History implements Callable<Integer> {
     private CoinService coinService = CoinService.getInstance();
 
     public Integer call() throws IOException, InterruptedException {
-        Currency currency = Currency.getInstance(denomination);
+        Currency currency = Currency.getInstance(denomination.toUpperCase());
         String res = coinService.getCoinHistory(crypto.coinNames[0], currency, numDaysHistory);
         CoinView.displayPriceHistory(res, currency);
         return 0;

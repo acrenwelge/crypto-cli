@@ -70,6 +70,7 @@ public class CoinService {
         try {
             coins = CoinFileReaderWriter.getCoinListFromFile();
         } catch (FileNotFoundException fnfe) {
+            logger.print("cache file not found - requesting data from API...%n");
             final String URL = BASE_URL.concat("/coins/list");
             logger.trace(DEBUG_REQUEST,URL);
             HttpRequest req = HttpRequest.newBuilder()
@@ -77,7 +78,7 @@ public class CoinService {
                 .build();
             HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
             String rawJson = resp.body();
-            logger.info("Writing coin list to cache file...");
+            logger.print("Writing coin list to cache file...%n");
             CoinFileReaderWriter.writeCoinListToFile(rawJson);
             coins = CoinFileReaderWriter.getCoinListFromJson(rawJson);
         }

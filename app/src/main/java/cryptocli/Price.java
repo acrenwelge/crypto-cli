@@ -39,7 +39,7 @@ public class Price implements Callable<Integer> {
     @Option(names={"-i","--interval"}, defaultValue = "15")
     int timeIntervalInSeconds;
 
-    @Option(names={"-s","--stop"}, defaultValue = "null")
+    @Option(names={"-s","--stop"})
     Optional<Integer> stopAfterTimeInMinutes;
 
     private CoinService coinService = CoinService.getInstance();

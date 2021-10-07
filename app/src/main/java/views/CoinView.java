@@ -91,8 +91,10 @@ public class CoinView {
             double price = entry[1];
             Currency.getInstance("USD").getSymbol();
             LocalDateTime dateTime = Instant.ofEpochMilli((long) epochTime).atZone(ZoneOffset.UTC).toLocalDateTime();
-            logger.print("%20s | %s%,9.0f %n",currency.getSymbol(),
-            dateTime.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")), price);
+            logger.print("%20s | %s%,9.0f %n",
+                dateTime.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")),
+                currency.getSymbol(),
+                price);
         }
     }
 
