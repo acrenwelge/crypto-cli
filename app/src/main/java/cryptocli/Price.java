@@ -66,7 +66,6 @@ public class Price implements Callable<Integer> {
             }
         } else {
             String jsonResult = coinService.getCoinPrices(crypto.coinNames, crypto.denominations);
-            System.out.println(crypto.denominations);
             CoinView.displayPriceTable(jsonResult, crypto.coinNames, crypto.denominations);
         }
         return 0;

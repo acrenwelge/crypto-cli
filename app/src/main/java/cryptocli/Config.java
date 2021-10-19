@@ -6,15 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Currency;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.Spec;

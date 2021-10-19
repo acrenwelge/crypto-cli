@@ -62,13 +62,11 @@ public class Crypto implements Callable<Integer> {
         paramLabel = "DENOMINATION"
     )
     public void setCurrency(String[] currencies) {
-        System.out.println("GOT HERE");
         this.denominations = new ArrayList<>();
         for (String cur : currencies) {
             try {
                 Currency c = Currency.getInstance(cur);
                 this.denominations.add(c);
-                System.out.println("ADDING " + c.getCurrencyCode());
             } catch (IllegalArgumentException e) {
                 throw new ParameterException(spec.commandLine(),
                 String.format("Currency value %s is not a supported ISO 4217 code.",cur));

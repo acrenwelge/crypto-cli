@@ -30,7 +30,6 @@ public class CryptoDefaultValueProvider implements IDefaultValueProvider {
             value = lookupFallbacks(optionName);
             logger.debug("No %s specified - defaulting to %s", optionName, value);
         }
-        System.out.println("Looked up " + optionName + " => " + value);
         return value;
     }
     

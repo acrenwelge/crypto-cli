@@ -1,9 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/gradle,macos,java
 # Edit at https://www.toptal.com/developers/gitignore?templates=gradle,macos,java
 
-coins.json
-samplecoin.json
-
 ### Java ###
 # Compiled class file
 *.class

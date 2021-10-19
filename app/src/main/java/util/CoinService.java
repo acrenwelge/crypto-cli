@@ -68,21 +68,30 @@ public class CoinService {
     public List<Coin> getCoinList() throws IOException, InterruptedException {
         List<Coin> coins;
         try {
-            coins = CoinFileReaderWriter.getCoinListFromFile();
+            if (CoinFileReaderWriter.cacheIsExpired()) {
+                logger.info("Cache file expired - refreshing data from API");
+                coins = getCoinListFromApi();
+            } else {
+                coins = CoinFileReaderWriter.getCoinListFromFile();
+            }
         } catch (FileNotFoundException fnfe) {
-            logger.print("cache file not found - requesting data from API...%n");
-            final String URL = BASE_URL.concat("/coins/list");
-            logger.trace(DEBUG_REQUEST,URL);
-            HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(URL))
-                .build();
-            HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
-            String rawJson = resp.body();
-            logger.print("Writing coin list to cache file...%n");
-            CoinFileReaderWriter.writeCoinListToFile(rawJson);
-            coins = CoinFileReaderWriter.getCoinListFromJson(rawJson);
+            logger.print("Cache file not found - requesting data from API%n");
+            coins = getCoinListFromApi();
         }
         return coins;
+    }
+
+    private List<Coin> getCoinListFromApi() throws IOException, InterruptedException {
+        final String URL = BASE_URL.concat("/coins/list");
+        logger.trace(DEBUG_REQUEST,URL);
+        HttpRequest req = HttpRequest.newBuilder()
+            .uri(URI.create(URL))
+            .build();
+        HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
+        String rawJson = resp.body();
+        logger.print("Writing coin list to cache file...%n");
+        CoinFileReaderWriter.writeCoinListToFile(rawJson);
+        return CoinFileReaderWriter.getCoinListFromJson(rawJson);
     }
 
     public String getCoinPrices(String[] coins, List<Currency> denominations) 
