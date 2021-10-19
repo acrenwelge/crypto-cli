@@ -85,13 +85,17 @@ public class CoinService {
         return coins;
     }
 
-    public String getCoinPrices(String[] coins, String[] denominations) 
+    public String getCoinPrices(String[] coins, List<Currency> denominations) 
         throws IOException, InterruptedException  {
+        String[] currencyCodes = new String[denominations.size()];
+        for (int i = 0; i < denominations.size(); i++) {
+            currencyCodes[i] = denominations.get(i).getCurrencyCode();
+        }
         final String URL = BASE_URL
             .concat("/simple/price?ids=")
             .concat(String.join(",", coins))
             .concat("&vs_currencies=")
-            .concat(String.join(",", denominations));
+            .concat(String.join(",", currencyCodes));
         logger.trace(DEBUG_REQUEST,URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
@@ -114,7 +118,7 @@ public class CoinService {
         return resp.body();
     }
 
-    public Coin getCoinPriceOnDate(String coin, LocalDate date, String currency)
+    public Coin getCoinPriceOnDate(String coin, LocalDate date, Currency currency)
         throws IOException, InterruptedException  {
         final String URL = BASE_URL
             .concat("/coins/").concat(coin)
@@ -125,6 +129,6 @@ public class CoinService {
             .uri(URI.create(URL))
             .build();
         HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
-        return CoinJsonParser.fromDateSnapshotJson(resp.body(), currency);
+        return CoinJsonParser.fromDateSnapshotJson(resp.body(), currency.getCurrencyCode());
     }
 }

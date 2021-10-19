@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Currency;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -39,22 +40,22 @@ public class CoinView {
         logger.print();
     }
 
-    public static void displayPriceTable(String jsonResponse, String[] coinNames, String[] denominations) {
+    public static void displayPriceTable(String jsonResponse, String[] coinNames, List<Currency> denominations) {
         JsonObject root = JsonParser.parseString(jsonResponse).getAsJsonObject();
         logger.print("=".repeat(80).concat("%n"));
         logger.print("%80s%n","Coin Prices");
         logger.print("=".repeat(80).concat("%n"));
         logger.print("| %30s | ","Coin");
-        for (String currency : denominations) {
-            logger.print("%10s |",currency);
+        for (Currency currency : denominations) {
+            logger.print("%10s |",currency.getCurrencyCode());
         }
         logger.print("%n");
         for (String name : coinNames) {
             logger.print("| %30s | ",name);
             if (root.has(name)) {
                 JsonObject denoms = root.get(name).getAsJsonObject();
-                for (String d : denominations) {
-                    logger.print("%10s |", denoms.get(d).getAsBigDecimal());
+                for (Currency d : denominations) {
+                    logger.print("%10s |", denoms.get(d.getCurrencyCode().toLowerCase()).getAsBigDecimal());
                 }
             } else {
                 logger.print("N/A%n");
