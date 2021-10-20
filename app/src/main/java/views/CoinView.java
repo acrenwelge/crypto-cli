@@ -7,6 +7,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -45,17 +46,19 @@ public class CoinView {
         logger.print("=".repeat(80).concat("%n"));
         logger.print("%80s%n","Coin Prices");
         logger.print("=".repeat(80).concat("%n"));
-        logger.print("| %30s | ","Coin");
+        logger.print("| %30s |","Coin");
         for (Currency currency : denominations) {
-            logger.print("%10s |",currency.getCurrencyCode());
+            logger.print("%13s |",currency.getCurrencyCode());
         }
         logger.print("%n");
         for (String name : coinNames) {
-            logger.print("| %30s | ",name);
+            logger.print("| %30s |",name);
             if (root.has(name)) {
                 JsonObject denoms = root.get(name).getAsJsonObject();
                 for (Currency d : denominations) {
-                    logger.print("%10s |", denoms.get(d.getCurrencyCode().toLowerCase()).getAsBigDecimal());
+                    logger.print("%2s %,10.0f |", 
+                    d.getSymbol(),
+                    denoms.get(d.getCurrencyCode().toLowerCase()).getAsBigDecimal());
                 }
             } else {
                 logger.print("N/A%n");

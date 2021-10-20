@@ -1,4 +1,4 @@
-# Crypto CLI ⚡️
+# ⚡️ Crypto CLI ⚡️
 
 Ever felt the pressing need to lookup crypto data right from your shell? Now you can!
 
@@ -54,6 +54,8 @@ crypto price -c bitcoin -w -i 10 -s 1 # interval of 10 seconds, stop after 1 min
 ```
 
 ### Config
+The default coin and currency to use will be stored in `$HOME/.crypto/defaults.properties`. If this file exists, these values will be used unless overridden with command line arguments. If no file exists and no command line arguments are provided, the program reverts to bitcoin and USD defaults, respectively.
+
 ⚙️ Set default crypto and currency
 ```bash
 crypto config -c bitcoin
@@ -62,10 +64,23 @@ crypto config # displays current defaults if no args set
 ```
 > Crypto coin must be its `id`. Currency must follow [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
 
+📝 List possible coin and currency values
+```bash
+crypto list coins
+crypto list currencies
+```
+
 ### Caching
 A list of coins to search will be cached in `$HOME/.crypto/coins.json` for quick searching and lookup. By default, a [TTL](https://en.wikipedia.org/wiki/Time_to_live) value of 7 days will be used.
 
-The default coin and currency to use will be stored in `$HOME/.crypto/defaults.properties`. If this file exists, these values will be used unless overridden with command line arguments. If no file exists and no command line arguments are provided, the program reverts to bitcoin and USD defaults, respectively.
+### Complex Queries & Examples 🧐
+```bash
+# find the number of cryptocurrencies with the word "chain" in their name
+crypto list coins | grep chain | wc -l
+
+# store the price of bitcoin for the last year
+crypto history -c bitcoin -d 365 > btc-prices-last-year.txt
+```
 
 ### Built with...
 * [Java 11](https://docs.oracle.com/en/java/javase/11/docs/api/index.html)

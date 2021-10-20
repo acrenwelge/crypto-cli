@@ -25,7 +25,12 @@ public class CoinFileReaderWriter {
     private static final CustomLogger logger = CustomLogger.getInstance();
 
     public static List<Coin> getCoinListFromFile() throws IOException, JsonParseException {
-        Path filepath = Paths.get(CACHED_COIN_LIST_FILE);
+        return getCoinListFromFile(CACHED_COIN_LIST_FILE);
+    }
+
+    // configurable path method for testing
+    static List<Coin> getCoinListFromFile(String pathStr) throws IOException, JsonParseException {
+        Path filepath = Paths.get(pathStr);
         String raw;
         if (Files.exists(filepath)) {
             raw = Files.readString(filepath);

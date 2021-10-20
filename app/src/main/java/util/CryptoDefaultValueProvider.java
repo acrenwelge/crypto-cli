@@ -10,6 +10,12 @@ import picocli.CommandLine.Model.OptionSpec;
 public class CryptoDefaultValueProvider implements IDefaultValueProvider {
     private CustomLogger logger = CustomLogger.getInstance();
 
+    private Config config = new Config();
+
+    public void setConfig(Config c) {
+        this.config = c;
+    }
+
     private static String lookupFallbacks(String optName) {
         if (optName.equals("--coin")) {
             return "bitcoin";
@@ -23,7 +29,7 @@ public class CryptoDefaultValueProvider implements IDefaultValueProvider {
     @Override
     public String defaultValue(ArgSpec argSpec) throws Exception {
         OptionSpec optSpec = (OptionSpec) argSpec;
-        Properties props = Config.loadPropsFromFile();
+        Properties props = config.loadPropsFromFile();
         final String optionName = optSpec.longestName();
         String value = props.getProperty(optionName);
         if (value == null) {

@@ -28,12 +28,12 @@ import views.CoinView;
     mixinStandardHelpOptions = true, 
     version = "crypto 1.1",
     description = "Find information on any cryptocurrency",
-    subcommands = {Config.class, Search.class, Price.class, History.class},
+    subcommands = {Config.class, Search.class, Price.class, History.class, HelpList.class},
     defaultValueProvider = CryptoDefaultValueProvider.class
     )
 public class Crypto implements Callable<Integer> {
     @Spec CommandSpec spec;
-    
+
     @Option(names={"-c","--coin"},
         scope = ScopeType.INHERIT,
         description = "bitcoin, ethereum, usdc, ...",

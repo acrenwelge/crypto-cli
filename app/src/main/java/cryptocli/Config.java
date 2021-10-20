@@ -26,10 +26,15 @@ public class Config implements Callable<Integer> {
     @ParentCommand
     Crypto crypto;
 
-    public static Properties loadPropsFromFile() throws IOException {
+    public Properties loadPropsFromFile() throws IOException {
+        return loadPropsFromFile(FILEPATH);
+    }
+
+    // configurable method for testing
+    public Properties loadPropsFromFile(Path fp) throws IOException {
         Properties props = new Properties();
         try {
-            props.load(Files.newBufferedReader(FILEPATH));
+            props.load(Files.newBufferedReader(fp));
         } catch (NoSuchFileException nsfe) {
             logger.error("Config file does not exist - creating new one...%n");
             Files.createDirectories(FILEPATH.getParent());
