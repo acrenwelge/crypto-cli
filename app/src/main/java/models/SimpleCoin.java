@@ -12,8 +12,7 @@ public class SimpleCoin {
         return this.pricesInCurrencies;
     }
 
-    public void addPrice(String currency, double amount) {
-        Currency c = Currency.getInstance(currency.toUpperCase());
-        pricesInCurrencies.put(c, amount);
+    public void addPrice(Currency currency, double amount) {
+        pricesInCurrencies.put(currency, amount);
     }
 }

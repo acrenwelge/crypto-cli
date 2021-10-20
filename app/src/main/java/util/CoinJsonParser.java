@@ -2,6 +2,7 @@ package util;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import com.google.gson.JsonObject;
@@ -51,6 +52,7 @@ public class CoinJsonParser {
     }
 
     public static Coin fromDateSnapshotJson(String json, String currency) {
+        final String lowerCaseCur = currency.toLowerCase(); // json property is in lowercase: 'usd', 'eur', etc...
         JsonObject root = JsonParser.parseString(json).getAsJsonObject();
         JsonObject prices = root.get("market_data").getAsJsonObject().get("current_price").getAsJsonObject();
         JsonObject marketCap = root.get("market_data").getAsJsonObject().get("market_cap").getAsJsonObject();
@@ -58,20 +60,21 @@ public class CoinJsonParser {
             .addId(root.get("id").getAsString())
             .addSymbol(root.get("symbol").getAsString())
             .addName(root.get("name").getAsString())
-            .addCurrentPrice(prices.get(currency).getAsDouble())
-            .addMarketCap(marketCap.get(currency).getAsBigDecimal())
+            .addCurrentPrice(prices.get(lowerCaseCur).getAsDouble())
+            .addMarketCap(marketCap.get(lowerCaseCur).getAsBigDecimal())
             .build();
     }
 
-    public static List<SimpleCoin> fromSimplePriceJson(String json, String[] coinNames, String[] denominations) {
+    public static List<SimpleCoin> fromSimplePriceJson(String json, String[] coinNames, List<Currency> denominations) {
         List<SimpleCoin> list = new ArrayList<>();
         JsonObject root = JsonParser.parseString(json).getAsJsonObject();
         for (String name : coinNames) {
             SimpleCoin sc = new SimpleCoin();
             sc.id = name;
             JsonObject coin = root.get(name).getAsJsonObject();
-            for (String denom : denominations) {
-                sc.addPrice(denom, coin.get(denom).getAsDouble());
+            for (Currency denom : denominations) {
+                final String lowerCaseCur = denom.getCurrencyCode().toLowerCase();
+                sc.addPrice(denom, coin.get(lowerCaseCur).getAsDouble());
             }
             list.add(sc);
         }

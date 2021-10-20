@@ -1,4 +1,4 @@
-package cryptocli;
+package util;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,17 +14,20 @@ import util.CoinFileReaderWriter;
 import util.CoinJsonParser;
 
 public class CoinJsonDeserializeTest {
+
     @Test
     public void testDeserializeCoin() throws IOException {
-        Path p = Paths.get("../samplecoin.json");
-        String rawJson = Files.readString(p);
-        Coin sample = CoinJsonParser.fromJsonString(rawJson);
+        String coinJson = new String(CoinJsonDeserializeTest.class.getClassLoader()
+            .getResourceAsStream("samplecoin.json").readAllBytes());
+        Coin sample = CoinJsonParser.fromJsonString(coinJson);
         Assert.assertEquals("bitcoin", sample.id);
+        Assert.assertEquals("Bitcoin", sample.name);
+        Assert.assertEquals("btc", sample.symbol);
     }
 
     @Test
     public void testDeserializeList() throws IOException {
-        List<Coin> coins = CoinFileReaderWriter.getCoinListFromFile();
+        List<Coin> coins = CoinFileReaderWriter.getCoinListFromFile("src/test/resources/coins.json");
         Assert.assertEquals(coins.get(0).id, "01coin");
         Assert.assertEquals(coins.get(0).name, "01coin");
         Assert.assertEquals(coins.get(0).symbol, "zoc");

@@ -25,9 +25,6 @@ public class Price implements Callable<Integer> {
     @ParentCommand
     Crypto crypto;
 
-    @Option(names={"-cur","--currency"}, defaultValue = "usd")
-    String[] denominations;
-
     /* Option for finding price on specific date*/
     @Option(names="--date")
     Optional<LocalDate> date;
@@ -47,15 +44,15 @@ public class Price implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         if (date.isPresent()) {
-            Coin c = coinService.getCoinPriceOnDate(crypto.coinNames[0], date.get(), denominations[0]);
+            Coin c = coinService.getCoinPriceOnDate(crypto.coinNames[0], date.get(), crypto.denominations.get(0));
             CoinView.displayCoinOnDate(c, date.get());
         } else if (watch) {
             long start = System.currentTimeMillis();
             CoinView.displayPriceWatchHeader(crypto.coinNames[0]);
             while(true) {
                 String jsonResult = coinService.getCoinPrices(
-                    new String[]{crypto.coinNames[0]},denominations);
-                List<SimpleCoin> coins = CoinJsonParser.fromSimplePriceJson(jsonResult, crypto.coinNames, denominations);
+                    new String[]{crypto.coinNames[0]},crypto.denominations);
+                List<SimpleCoin> coins = CoinJsonParser.fromSimplePriceJson(jsonResult, crypto.coinNames, crypto.denominations);
                 for (SimpleCoin coin : coins) {
                     CoinView.displayPriceWatchRow(coin);
                 }
@@ -68,8 +65,8 @@ public class Price implements Callable<Integer> {
                 Thread.sleep((long) timeIntervalInSeconds * 1000);
             }
         } else {
-            String jsonResult = coinService.getCoinPrices(crypto.coinNames, denominations);
-            CoinView.displayPriceTable(jsonResult, crypto.coinNames, denominations);
+            String jsonResult = coinService.getCoinPrices(crypto.coinNames, crypto.denominations);
+            CoinView.displayPriceTable(jsonResult, crypto.coinNames, crypto.denominations);
         }
         return 0;
     }

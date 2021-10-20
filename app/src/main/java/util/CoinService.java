@@ -68,30 +68,43 @@ public class CoinService {
     public List<Coin> getCoinList() throws IOException, InterruptedException {
         List<Coin> coins;
         try {
-            coins = CoinFileReaderWriter.getCoinListFromFile();
+            if (CoinFileReaderWriter.cacheIsExpired()) {
+                logger.info("Cache file expired - refreshing data from API");
+                coins = getCoinListFromApi();
+            } else {
+                coins = CoinFileReaderWriter.getCoinListFromFile();
+            }
         } catch (FileNotFoundException fnfe) {
-            logger.print("cache file not found - requesting data from API...%n");
-            final String URL = BASE_URL.concat("/coins/list");
-            logger.trace(DEBUG_REQUEST,URL);
-            HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(URL))
-                .build();
-            HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
-            String rawJson = resp.body();
-            logger.print("Writing coin list to cache file...%n");
-            CoinFileReaderWriter.writeCoinListToFile(rawJson);
-            coins = CoinFileReaderWriter.getCoinListFromJson(rawJson);
+            logger.print("Cache file not found - requesting data from API%n");
+            coins = getCoinListFromApi();
         }
         return coins;
     }
 
-    public String getCoinPrices(String[] coins, String[] denominations) 
+    private List<Coin> getCoinListFromApi() throws IOException, InterruptedException {
+        final String URL = BASE_URL.concat("/coins/list");
+        logger.trace(DEBUG_REQUEST,URL);
+        HttpRequest req = HttpRequest.newBuilder()
+            .uri(URI.create(URL))
+            .build();
+        HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
+        String rawJson = resp.body();
+        logger.print("Writing coin list to cache file...%n");
+        CoinFileReaderWriter.writeCoinListToFile(rawJson);
+        return CoinFileReaderWriter.getCoinListFromJson(rawJson);
+    }
+
+    public String getCoinPrices(String[] coins, List<Currency> denominations) 
         throws IOException, InterruptedException  {
+        String[] currencyCodes = new String[denominations.size()];
+        for (int i = 0; i < denominations.size(); i++) {
+            currencyCodes[i] = denominations.get(i).getCurrencyCode();
+        }
         final String URL = BASE_URL
             .concat("/simple/price?ids=")
             .concat(String.join(",", coins))
             .concat("&vs_currencies=")
-            .concat(String.join(",", denominations));
+            .concat(String.join(",", currencyCodes));
         logger.trace(DEBUG_REQUEST,URL);
         HttpRequest req = HttpRequest.newBuilder()
             .uri(URI.create(URL))
@@ -114,7 +127,7 @@ public class CoinService {
         return resp.body();
     }
 
-    public Coin getCoinPriceOnDate(String coin, LocalDate date, String currency)
+    public Coin getCoinPriceOnDate(String coin, LocalDate date, Currency currency)
         throws IOException, InterruptedException  {
         final String URL = BASE_URL
             .concat("/coins/").concat(coin)
@@ -125,6 +138,6 @@ public class CoinService {
             .uri(URI.create(URL))
             .build();
         HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
-        return CoinJsonParser.fromDateSnapshotJson(resp.body(), currency);
+        return CoinJsonParser.fromDateSnapshotJson(resp.body(), currency.getCurrencyCode());
     }
 }
