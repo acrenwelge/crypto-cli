@@ -5,12 +5,11 @@ Ever felt the pressing need to lookup crypto data right from your shell? Now you
 ### Installation
 Note: requires Java 11+
 ```bash
-git clone https://github.com/acrenwelge/crypto-cli
-cd ./crypto-cli
-gradle build
-cp ./app/build/libs/app.jar /usr/local/bin/crypto.jar # or another location on your $PATH
+# download the .jar file to a location on your $PATH
+curl -L https://github.com/acrenwelge/crypto-cli/releases/download/v1.1/crypto.jar > /usr/local/bin/crypto.jar
+# setup crypto command
 echo "alias crypto='java -jar /usr/local/bin/crypto.jar'" >> ~/.bashrc
-alias crypto='java -jar /usr/local/bin/crypto.jar'
+source ~/.bashrc
 ```
 
 ### Usage

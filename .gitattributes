@@ -4,3 +4,5 @@
 # These are explicitly windows files and should use crlf
 *.bat           text eol=crlf
 
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
