@@ -28,7 +28,7 @@ import views.CoinView;
     mixinStandardHelpOptions = true, 
     version = "crypto 1.1",
     description = "Find information on any cryptocurrency",
-    subcommands = {Config.class, Search.class, Price.class, History.class, HelpList.class},
+    subcommands = {Config.class, Search.class, Price.class, History.class, Gains.class, HelpList.class},
     defaultValueProvider = CryptoDefaultValueProvider.class
     )
 public class Crypto implements Callable<Integer> {
