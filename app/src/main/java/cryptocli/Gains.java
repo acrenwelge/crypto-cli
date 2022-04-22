@@ -34,12 +34,16 @@ public class Gains implements Callable<Integer> {
         }
         LocalDate begin = beginAndEndDates[0];
         LocalDate end = beginAndEndDates[1];
-        Coin startCoin = coinService.getCoinPriceOnDate(crypto.coinNames[0], begin, cur);
-        Coin endCoin = coinService.getCoinPriceOnDate(crypto.coinNames[0], end, cur);
-        double change = (endCoin.currentPrice - startCoin.currentPrice) / startCoin.currentPrice * 100;
-        logger.print("| %-20s | %12s | $%10.2f |%n","Start date & Price",begin, startCoin.currentPrice);
-        logger.print("| %-20s | %12s | $%10.2f |%n","End date & Price",end, endCoin.currentPrice);
-        logger.print("| %-20s | %,26.2f |%n","% Change", change);
+        for (int i=0; i < crypto.coinNames.length; i++) {
+            Coin startCoin = coinService.getCoinPriceOnDate(crypto.coinNames[i], begin, cur);
+            Coin endCoin = coinService.getCoinPriceOnDate(crypto.coinNames[i], end, cur);
+            double change = (endCoin.currentPrice - startCoin.currentPrice) / startCoin.currentPrice * 100;
+            logger.print("%s%n",startCoin.name.toUpperCase());
+            logger.print("| %-20s | %12s | %s%10.2f |%n","Start date & Price",begin, cur.getSymbol(), startCoin.currentPrice);
+            logger.print("| %-20s | %12s | %s%10.2f |%n","End date & Price",end, cur.getSymbol(), endCoin.currentPrice);
+            logger.print("| %-20s | %,26.2f |%n","% Change", change);
+            logger.print("%n");
+        }
         return 0;
     }
     
