@@ -39,6 +39,7 @@ crypto price -c bitcoin -c ethereum -c litecoin -cur USD -cur EUR
 📈 Get price history of bitcoin for last 10 days
 ```bash
 crypto history -c bitcoin -d 10
+crypto history -c bitcoin -d 10 --graph # add a graph
 ```
 
 📖 Get USD price of bitcoin on May 1, 2015
@@ -87,3 +88,4 @@ crypto history -c bitcoin -d 365 > btc-prices-last-year.txt
 * [Coingecko API](https://www.coingecko.com/en/api/documentation?)
 * [picocli](https://picocli.info/)
 * [Google Gson](https://github.com/google/gson/blob/master/UserGuide.md)
+* [ASCII Graph](https://github.com/MitchTalmadge/ASCII-Data)

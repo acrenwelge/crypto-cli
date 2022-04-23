@@ -1,14 +1,20 @@
 package util;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import models.Coin;
+import models.PriceSnapshot;
 import models.SimpleCoin;
 
 public class CoinJsonParser {
@@ -77,6 +83,23 @@ public class CoinJsonParser {
                 sc.addPrice(denom, coin.get(lowerCaseCur).getAsDouble());
             }
             list.add(sc);
+        }
+        return list;
+    }
+
+    public static List<PriceSnapshot> extractPriceHistory(String jsonString) {
+        JsonArray prices = JsonParser.parseString(jsonString)
+            .getAsJsonObject().get("prices").getAsJsonArray();
+        Gson gson = new Gson();
+        double[][] priceHistory = gson.fromJson(prices, double[][].class);
+        List<PriceSnapshot> list = new ArrayList<PriceSnapshot>();
+        for (double[] entry : priceHistory) {
+            PriceSnapshot ps = new PriceSnapshot();
+            double epochTime = entry[0];
+            LocalDateTime dateTime = Instant.ofEpochMilli((long) epochTime).atZone(ZoneOffset.UTC).toLocalDateTime();
+            ps.preciseTime = dateTime;
+            ps.price = entry[1];
+            list.add(ps);
         }
         return list;
     }

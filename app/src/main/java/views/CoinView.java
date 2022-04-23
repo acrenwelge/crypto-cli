@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import models.Coin;
+import models.PriceSnapshot;
 import models.SimpleCoin;
 import util.CustomLogger;
 
@@ -83,22 +84,14 @@ public class CoinView {
                 cur.getSymbol(),
                 price));
     }
-    public static void displayPriceHistory(String jsonString, Currency currency) {
-        JsonArray prices = JsonParser.parseString(jsonString)
-            .getAsJsonObject().get("prices").getAsJsonArray();
-        Gson gson = new Gson();
-        double[][] priceHistory = gson.fromJson(prices, double[][].class);
+    public static void displayPriceHistory(List<PriceSnapshot> prices, Currency currency) {
         logger.print("%20s | %10s %n","Date & Time","Price");
         logger.print("-".repeat(33).concat("%n"));
-        for (double[] entry : priceHistory) {
-            double epochTime = entry[0];
-            double price = entry[1];
-            Currency.getInstance("USD").getSymbol();
-            LocalDateTime dateTime = Instant.ofEpochMilli((long) epochTime).atZone(ZoneOffset.UTC).toLocalDateTime();
+        for (PriceSnapshot ps : prices) {
             logger.print("%20s | %s%,9.0f %n",
-                dateTime.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")),
+                ps.preciseTime.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")),
                 currency.getSymbol(),
-                price);
+                ps.price);
         }
     }
 

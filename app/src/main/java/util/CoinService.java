@@ -19,6 +19,7 @@ import java.util.Currency;
 import java.util.List;
 
 import models.Coin;
+import models.PriceSnapshot;
 
 /**
  * Singleton class for getting coin information from the API
@@ -113,7 +114,7 @@ public class CoinService {
         return resp.body();
     }
 
-    public String getCoinHistory(String coin, Currency currency, int daysAgo) 
+    public List<PriceSnapshot> getCoinHistory(String coin, Currency currency, int daysAgo) 
         throws IOException, InterruptedException  {
         final String URL = BASE_URL
             .concat("/coins/").concat(coin)
@@ -124,7 +125,8 @@ public class CoinService {
             .uri(URI.create(URL))
             .build();
         HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
-        return resp.body();
+        String responseJson = resp.body();
+        return CoinJsonParser.extractPriceHistory(responseJson);
     }
 
     public Coin getCoinPriceOnDate(String coin, LocalDate date, Currency currency)
