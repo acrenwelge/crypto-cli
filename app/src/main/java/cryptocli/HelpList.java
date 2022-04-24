@@ -8,11 +8,7 @@ import java.util.List;
 import com.google.gson.JsonParseException;
 
 import models.Coin;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Help;
-import picocli.CommandLine.Help.ColorScheme;
-import picocli.CommandLine.IHelpCommandInitializable2;
 import picocli.CommandLine.Parameters;
 import util.CoinFileReaderWriter;
 
@@ -29,9 +25,7 @@ public class HelpList implements Runnable {
             try {
                 List<Coin> coins = CoinFileReaderWriter.getCoinListFromFile();
                 outWriter.println("List of possible cryptocurrency values:");
-                coins.forEach(coin -> {
-                    outWriter.println(coin.id);
-                });
+                coins.forEach(coin -> outWriter.println(coin.id));
                 outWriter.println();
             } catch (JsonParseException e) {
                 errWriter.println("There was a problem parsing the coin list JSON string");

@@ -53,6 +53,11 @@ crypto price -c bitcoin --watch
 crypto price -c bitcoin -w -i 10 -s 1 # interval of 10 seconds, stop after 1 minute
 ```
 
+％ See price gains over time
+```bash
+crypto gains -c bitcoin 2020-01-01 2021-01-01
+```
+
 ### Config
 The default coin and currency to use will be stored in `$HOME/.crypto/defaults.properties`. If this file exists, these values will be used unless overridden with command line arguments. If no file exists and no command line arguments are provided, the program reverts to bitcoin and USD defaults, respectively.
 

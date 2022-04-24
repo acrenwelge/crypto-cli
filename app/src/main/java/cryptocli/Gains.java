@@ -12,7 +12,6 @@ import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParentCommand;
 import util.CoinService;
 import util.CustomLogger;
-import util.StatService;
 
 @Command(name="gains",
     description = "Calculate price increase/decreases"

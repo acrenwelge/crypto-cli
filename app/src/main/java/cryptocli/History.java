@@ -14,6 +14,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.ParentCommand;
 import util.CoinService;
+import util.CustomLogger;
 import views.CoinView;
 
 @Command(name="history",
@@ -38,7 +39,7 @@ public class History implements Callable<Integer> {
             List<PriceSnapshot> priceHistory = coinService.getCoinHistory(coin, cur, numDaysHistory);
             CoinView.displayPriceHistory(priceHistory, cur);
             if (graphIt) {
-                final int GRAPH_X_MAX = 50;
+                final int GRAPH_X_MAX = 75;
                 int every = 1;
                 if(priceHistory.size() > GRAPH_X_MAX) {
                     every = priceHistory.size() / GRAPH_X_MAX; // scale x axis down
@@ -52,10 +53,10 @@ public class History implements Callable<Integer> {
                     arr[i] = prices.get(i);
                 }
                 String graph = ASCIIGraph.fromSeries(arr)
-                    .withNumRows(10)
+                    .withNumRows(30)
                     .withTickFormat(new DecimalFormat("###,###"))
                     .plot();
-                System.out.println(graph);
+                CustomLogger.getInstance().print(graph);
             }
         }
         return 0;

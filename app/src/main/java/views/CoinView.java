@@ -1,18 +1,11 @@
 package views;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Currency;
 import java.util.List;
-import java.util.Locale;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.util.Set;
 
 import models.Coin;
 import models.PriceSnapshot;
@@ -42,28 +35,23 @@ public class CoinView {
         logger.print();
     }
 
-    public static void displayPriceTable(String jsonResponse, String[] coinNames, List<Currency> denominations) {
-        JsonObject root = JsonParser.parseString(jsonResponse).getAsJsonObject();
+    public static void displayPriceTable(List<SimpleCoin> coins, Set<Currency> currencies) {
         logger.print("=".repeat(80).concat("%n"));
         logger.print("%80s%n","Coin Prices");
         logger.print("=".repeat(80).concat("%n"));
         logger.print("| %30s |","Coin");
-        for (Currency currency : denominations) {
+        for (Currency currency : currencies) {
             logger.print("%13s |",currency.getCurrencyCode());
         }
         logger.print("%n");
-        for (String name : coinNames) {
-            logger.print("| %30s |",name);
-            if (root.has(name)) {
-                JsonObject denoms = root.get(name).getAsJsonObject();
-                for (Currency d : denominations) {
-                    logger.print("%2s %,10.0f |", 
-                    d.getSymbol(),
-                    denoms.get(d.getCurrencyCode().toLowerCase()).getAsBigDecimal());
+        for (SimpleCoin coin : coins) {
+            logger.print("| %30s |",coin.id);
+            for (Currency c : currencies) {
+                if (coin.getPrices().containsKey(c)) {
+                    logger.print("%2s %,10.0f |",c.getSymbol(),coin.getPrices().get(c).doubleValue());
+                } else {
+                    logger.print("N/A%n");
                 }
-            } else {
-                logger.print("N/A%n");
-                break;
             }
             logger.print("%n");
         }
@@ -89,7 +77,7 @@ public class CoinView {
         logger.print("-".repeat(33).concat("%n"));
         for (PriceSnapshot ps : prices) {
             logger.print("%20s | %s%,9.0f %n",
-                ps.preciseTime.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")),
+                ps.preciseTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 currency.getSymbol(),
                 ps.price);
         }

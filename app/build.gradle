@@ -34,6 +34,7 @@ application {
 
 compileJava {
     options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+    options.encoding = 'UTF-8'
 }
 
 jar {

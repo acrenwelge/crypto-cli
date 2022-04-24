@@ -1,16 +1,18 @@
 package cryptocli;
 
 import java.time.LocalDate;
+import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import models.Coin;
 import models.SimpleCoin;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.ParentCommand;
-import util.CoinJsonParser;
 import util.CoinService;
 import util.CustomLogger;
 import views.CoinView;
@@ -50,9 +52,7 @@ public class Price implements Callable<Integer> {
             long start = System.currentTimeMillis();
             CoinView.displayPriceWatchHeader(crypto.coinNames[0]);
             while(true) {
-                String jsonResult = coinService.getCoinPrices(
-                    new String[]{crypto.coinNames[0]},crypto.denominations);
-                List<SimpleCoin> coins = CoinJsonParser.fromSimplePriceJson(jsonResult, crypto.coinNames, crypto.denominations);
+                List<SimpleCoin> coins = coinService.getCoinPrices(new String[]{crypto.coinNames[0]},crypto.denominations);
                 for (SimpleCoin coin : coins) {
                     CoinView.displayPriceWatchRow(coin);
                 }
@@ -65,8 +65,9 @@ public class Price implements Callable<Integer> {
                 Thread.sleep((long) timeIntervalInSeconds * 1000);
             }
         } else {
-            String jsonResult = coinService.getCoinPrices(crypto.coinNames, crypto.denominations);
-            CoinView.displayPriceTable(jsonResult, crypto.coinNames, crypto.denominations);
+            List<SimpleCoin> coins = coinService.getCoinPrices(crypto.coinNames, crypto.denominations);
+            Set<Currency> currencySet = crypto.denominations.stream().collect(Collectors.toSet());
+            CoinView.displayPriceTable(coins, currencySet);
         }
         return 0;
     }

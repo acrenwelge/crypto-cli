@@ -20,6 +20,7 @@ import java.util.List;
 
 import models.Coin;
 import models.PriceSnapshot;
+import models.SimpleCoin;
 
 /**
  * Singleton class for getting coin information from the API
@@ -95,7 +96,7 @@ public class CoinService {
         return CoinFileReaderWriter.getCoinListFromJson(rawJson);
     }
 
-    public String getCoinPrices(String[] coins, List<Currency> denominations) 
+    public List<SimpleCoin> getCoinPrices(String[] coins, List<Currency> denominations) 
         throws IOException, InterruptedException  {
         String[] currencyCodes = new String[denominations.size()];
         for (int i = 0; i < denominations.size(); i++) {
@@ -111,7 +112,7 @@ public class CoinService {
             .uri(URI.create(URL))
             .build();
         HttpResponse<String> resp = client.send(req, BodyHandlers.ofString());
-        return resp.body();
+        return CoinJsonParser.fromSimplePriceJson(resp.body(), coins, denominations);
     }
 
     public List<PriceSnapshot> getCoinHistory(String coin, Currency currency, int daysAgo) 

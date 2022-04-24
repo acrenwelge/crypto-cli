@@ -26,7 +26,7 @@ import views.CoinView;
 
 @Command(name = "crypto", 
     mixinStandardHelpOptions = true, 
-    version = "crypto 1.1",
+    version = "crypto 1.2",
     description = "Find information on any cryptocurrency",
     subcommands = {Config.class, Search.class, Price.class, History.class, Gains.class, HelpList.class},
     defaultValueProvider = CryptoDefaultValueProvider.class
