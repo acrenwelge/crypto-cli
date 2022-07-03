@@ -12,11 +12,19 @@
         },
         {
             "type": "java",
-            "name": "Launch Crypto",
+            "name": "CryptoCLI - watch btc price every 10s, stop after 1 min",
             "request": "launch",
             "mainClass": "cryptocli.Crypto",
             "projectName": "app",
             "args": "price -c bitcoin -w -i 10 -s 1"
+        },
+        {
+            "type": "java",
+            "name": "CryptoCLI - get last 10 weeks of price data",
+            "request": "launch",
+            "mainClass": "cryptocli.Crypto",
+            "projectName": "app",
+            "args": "history -w 10"
         }
     ]
 }

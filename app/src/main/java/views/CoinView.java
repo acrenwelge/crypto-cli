@@ -2,9 +2,13 @@ package views;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.WeekFields;
 import java.util.Currency;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import models.Coin;
@@ -65,6 +69,7 @@ public class CoinView {
         logger.print("%20s | %10s %n","Time","Price");
         logger.print("-".repeat(33).concat("%n"));
     }
+
     public static void displayPriceWatchRow(SimpleCoin coin) {
         coin.getPrices().forEach((cur, price) -> 
             logger.print("%20s | %s%,9.0f %n",
@@ -72,15 +77,65 @@ public class CoinView {
                 cur.getSymbol(),
                 price));
     }
-    public static void displayPriceHistory(List<PriceSnapshot> prices, Currency currency) {
+
+    public static void displayPriceHistory(List<PriceSnapshot> prices, Currency currency, char timeUnit) {
+        Set<LocalDate> days = new HashSet<>();
+        Set<YearMonth> months = new HashSet<>();
         logger.print("%20s | %10s %n","Date & Time","Price");
         logger.print("-".repeat(33).concat("%n"));
         for (PriceSnapshot ps : prices) {
-            logger.print("%20s | %s%,9.0f %n",
-                ps.preciseTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                currency.getSymbol(),
-                ps.price);
+            if (timeUnit == 'd') { // only record daily prices
+                if (!days.contains(ps.preciseTime.toLocalDate())) {
+                    printPriceAndTimeWithPattern(ps, currency, "yyyy-MM-dd");
+                    days.add(ps.preciseTime.toLocalDate());
+                }
+            } else if (timeUnit == 'w') { // only record weekly prices
+                // determine if days are in the same week
+                boolean anyAreInSameWeek = false;
+                for (LocalDate ld : days) {
+                    if (inSameCalendarWeek(ld,ps.preciseTime.toLocalDate())) {
+                        anyAreInSameWeek = true;
+                    }
+                }
+                if (!anyAreInSameWeek) {
+                    printPriceAndTimeWithPattern(ps, currency, "yyyy-MM-dd");
+                    days.add(ps.preciseTime.toLocalDate());
+                }
+            } else if (timeUnit == 'm') { // only record monthly prices
+                YearMonth ym = YearMonth.of(ps.preciseTime.getYear(), ps.preciseTime.getMonth());
+                if (!months.contains(ym)) {
+                    printPriceAndTimeWithPattern(ps, currency, "yyyy-MM");
+                    months.add(ym);
+                }
+            } else if (timeUnit == 'a') { // print all prices
+                printPriceAndTimeWithPattern(ps,currency,"yyyy-MM-dd HH:mm:ss");
+            }
         }
+    }
+
+    static boolean inSameCalendarWeek(LocalDate firstDate, LocalDate secondDate) {
+        // get a reference to the system of calendar weeks in your defaul locale
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        // find out the calendar week for each of the dates
+        int firstDatesCalendarWeek = firstDate.get(weekFields.weekOfWeekBasedYear());
+        int secondDatesCalendarWeek = secondDate.get(weekFields.weekOfWeekBasedYear());
+        /*
+         * find out the week based year, too,
+         * two dates might be both in a calendar week number 1 for example,
+         * but in different years
+         */
+        int firstWeekBasedYear = firstDate.get(weekFields.weekBasedYear());
+        int secondWeekBasedYear = secondDate.get(weekFields.weekBasedYear());
+        // return if they are equal or not
+        return firstDatesCalendarWeek == secondDatesCalendarWeek
+                && firstWeekBasedYear == secondWeekBasedYear;
+    }
+
+    static void printPriceAndTimeWithPattern(PriceSnapshot ps, Currency currency, String pattern) {
+        logger.print("%20s | %s%,9.0f %n",
+            ps.preciseTime.format(DateTimeFormatter.ofPattern(pattern)),
+            currency.getSymbol(),
+            ps.price);
     }
 
     public static void displayCoinOnDate(Coin c, LocalDate date) {

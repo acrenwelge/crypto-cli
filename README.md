@@ -6,7 +6,7 @@ Ever felt the pressing need to lookup crypto data right from your shell? Now you
 Note: requires Java 11+
 ```bash
 # download the .jar file to a location on your $PATH
-curl -L https://github.com/acrenwelge/crypto-cli/releases/download/v1.1/crypto.jar > /usr/local/bin/crypto.jar
+curl -L https://github.com/acrenwelge/crypto-cli/releases/download/v1.3/crypto-v1.3.jar > /usr/local/bin/crypto.jar
 # setup crypto command
 echo "alias crypto='java -jar /usr/local/bin/crypto.jar'" >> ~/.bashrc
 source ~/.bashrc
@@ -36,10 +36,12 @@ crypto price --coin bitcoin
 crypto price -c bitcoin -c ethereum -c litecoin -cur USD -cur EUR
 ```
 
-📈 Get price history of bitcoin for last 10 days
+📈 Get price history by day, week, or month
 ```bash
-crypto history -c bitcoin -d 10
+crypto history -c bitcoin -d 10 # past 10 days of bitcoin price
 crypto history -c bitcoin -d 10 --graph # add a graph
+crypto history -c bitcoin -w 5 # past 5 weeks of bitcoin price
+crypto history -c bitcoin -m 3 # past 3 months of bitcoin price
 ```
 
 📖 Get USD price of bitcoin on May 1, 2015

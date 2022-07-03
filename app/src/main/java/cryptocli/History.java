@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import com.mitchtalmadge.asciidata.graph.ASCIIGraph;
@@ -21,9 +22,15 @@ import views.CoinView;
     description = "Show price history of a cryptocurrency"
 )
 public class History implements Callable<Integer> {
+    // command can track history on either daily, weekly, or monthly basis
+    @Option(names={"-d", "--days"})
+    Optional<Integer> numDaysHistory;
 
-    @Option(names={"-d", "--days"}, required = true)
-    Integer numDaysHistory;
+    @Option(names={"-w", "--weeks"})
+    Optional<Integer> numWeeksHistory;
+
+    @Option(names={"-m", "--months"})
+    Optional<Integer> numMonthsHistory;
 
     @Option(names={"-g", "--graph"})
     boolean graphIt;
@@ -35,9 +42,21 @@ public class History implements Callable<Integer> {
 
     public Integer call() throws IOException, InterruptedException {
         Currency cur = crypto.denominations.get(0); // just use first denomination
+        int goBackDays = 0;
+        char timeUnit = 'a';
+        if (numMonthsHistory.isPresent()) {
+            goBackDays = numMonthsHistory.get() * 30;
+            timeUnit = 'm';
+        } else if (numWeeksHistory.isPresent()) {
+            goBackDays = numWeeksHistory.get() * 7;
+            timeUnit = 'w';
+        } else {
+            goBackDays = numDaysHistory.get();
+            timeUnit = 'd';
+        }
         for (String coin : crypto.coinNames) {
-            List<PriceSnapshot> priceHistory = coinService.getCoinHistory(coin, cur, numDaysHistory);
-            CoinView.displayPriceHistory(priceHistory, cur);
+            List<PriceSnapshot> priceHistory = coinService.getCoinHistory(coin, cur, goBackDays);
+            CoinView.displayPriceHistory(priceHistory, cur, timeUnit);
             if (graphIt) {
                 final int GRAPH_X_MAX = 75;
                 int every = 1;
